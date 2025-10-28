@@ -1,0 +1,116 @@
+// Action script...
+
+// [onClipEvent of sprite 3 in frame 1]
+onClipEvent (enterFrame)
+{
+    this._xscale = 100 + _root.bug1.char1._y / 45;
+    this._yscale = 100 + _root.bug1.char1._y / 45;
+    this._x = _root.bug1.char1._x / 200 * this._name + 360;
+    this._y = _root.bug1.char1._y / 160 * this._name + 200;
+}
+
+// [onClipEvent of sprite 7 in frame 1]
+onClipEvent (load)
+{
+    duplicateMovieClip("_root.bug", "bug1", 200);
+    for (i = 1; i <= 28; i++)
+    {
+        duplicateMovieClip("_root.bit", i, 100 + i);
+        _root[i]._x = 100 - i;
+        _root[i].gotoAndStop(29 - i);
+        _root.bit._visible = 0;
+    } // end of for
+}
+
+// [Action in Frame 1]
+_quality = "low";
+boundtop = getProperty("boundbox", _y);
+boundbottom = Number(getProperty("boundbox", _y)) + Number(getProperty("boundbox", _height));
+boundleft = getProperty("boundbox", _x);
+boundright = Number(getProperty("boundbox", _x)) + Number(getProperty("boundbox", _width));
+
+// [Action in Frame 3]
+i = 1;
+newbugY = getProperty("bug" + i + "/char0", _y) + (random(200) - 100);
+bugYpos = getProperty("bug" + i, _y) + (getProperty("bug" + i + "/char0", _y));
+if (Number(boundbottom) < Number(bugYpos))
+{
+    newbugY = newbugY - random(100);
+} // end if
+if (Number(bugYpos) < Number(boundtop))
+{
+    newbugY = Number(newbugY) + Number(random(100));
+} // end if
+newbugX = getProperty("bug" + i + "/char0", _x) + (random(300) - 150);
+bugXpos = getProperty("bug" + i, _x) + (getProperty("bug" + i + "/char0", _x));
+if (Number(boundright) < Number(bugXpos))
+{
+    newbugX = newbugX - random(100);
+} // end if
+if (Number(bugXpos) < Number(boundleft))
+{
+    newbugX = Number(newbugX) + Number(random(100));
+} // end if
+setProperty("bug" + i + "/char0", _y, newbugY);
+setProperty("bug" + i + "/char0", _x, newbugX);
+
+// [Action in Frame 4]
+gotoAndPlay(3);
+
+
+// Action script...
+
+// [Action in Frame 1]
+n = 1;
+a = 7;
+d = 1.590000;
+for (i = 0; Number(n) >= Number(i); i = Number(i) + 1)
+{
+    if (Number(i) == 0)
+    {
+        char0:Xpos = getProperty("char" + i, _x) + lead;
+        char0:Ypos = getProperty("char" + i, _y);
+    } // end if
+    if (Number(i) == 1)
+    {
+        char1:Xpos = getProperty("char" + i, _x) + lead;
+        char1:Ypos = getProperty("char" + i, _y);
+    } // end if
+    if (Number(i) > 0)
+    {
+        if (Number(i) == 1)
+        {
+            Xspacing1 = eval("char" + i + ":Xpos") - (eval("char" + (i - 1) + ":Xpos"));
+            Yspacing1 = eval("char" + i + ":Ypos") - (eval("char" + (i - 1) + ":Ypos"));
+        } // end if
+    } // end if
+} // end of for
+
+// [Action in Frame 2]
+for (i = 1; Number(n) >= Number(i); i = Number(i) + 1)
+{
+    if (Number(i) == 0)
+    {
+        char0:Xspeed = ((eval("Xspacing" + i) - (eval("char" + i + ":Xpos")) + (eval("char" + (i - 1) + ":Xpos"))) / a + (eval("char" + i + ":Xspeed"))) / d;
+        char0:Yspeed = (eval("Yspacing" + i) + (eval("char" + (i - 1) + ":Ypos")) - (eval("char" + i + ":Ypos"))) / a + (eval("char" + i + ":Yspeed")) / d;
+        char0:Xpos = eval("char" + i + ":Xpos") + (eval("char" + i + ":Xspeed"));
+        char0:Ypos = eval("char" + i + ":Ypos") + (eval("char" + i + ":Yspeed"));
+    } // end if
+    if (Number(i) == 1)
+    {
+        char1:Xspeed = ((eval("Xspacing" + i) - (eval("char" + i + ":Xpos")) + (eval("char" + (i - 1) + ":Xpos"))) / a + (eval("char" + i + ":Xspeed"))) / d;
+        char1:Yspeed = (eval("Yspacing" + i) + (eval("char" + (i - 1) + ":Ypos")) - (eval("char" + i + ":Ypos"))) / a + (eval("char" + i + ":Yspeed")) / d;
+        char1:Xpos = eval("char" + i + ":Xpos") + (eval("char" + i + ":Xspeed"));
+        char1:Ypos = eval("char" + i + ":Ypos") + (eval("char" + i + ":Yspeed"));
+    } // end if
+} // end of for
+char0:Xpos = getProperty("char0", _x);
+char0:Ypos = getProperty("char0", _y);
+for (i = 1; Number(n) >= Number(i); i = Number(i) + 1)
+{
+    setProperty("char" + i, _x, eval("char" + i + ":Xpos"));
+    setProperty("char" + i, _y, eval("char" + i + ":Ypos"));
+} // end of for
+
+// [Action in Frame 3]
+gotoAndPlay(2);
