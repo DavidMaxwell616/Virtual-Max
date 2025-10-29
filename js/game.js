@@ -4,15 +4,19 @@ var newX;
 var newY;
 var masks = [];
 var faces = [];
-
+var faceTimer = 0;
+const FACE_TIMER_MAX = 100;
+const START_FACE_FRAME = 13;
+const END_FACE_FRAME = 31;
+const CIRCLE_MIN_MAX = 40;
 class Example extends Phaser.Scene {
   constructor() {
     super();
   }
 
   preload() {
-    this.load.image('background', 'assets/images/face.png');
-    for (let index = 13; index < 31; index++) {
+    this.load.image('background', 'assets/images/face2.png');
+    for (let index = START_FACE_FRAME; index < END_FACE_FRAME; index++) {
       this.load.image('mask_' + index, 'assets/images/' + index + '.png');
       this.load.image('face_' + index, 'assets/images/face.png');
     }
@@ -21,13 +25,15 @@ class Example extends Phaser.Scene {
 
   create() {
     this.add.image(midX, midY, 'background');
-    for (let index = 31; index > 13; index--) {
-      const mask = this.add.bitmapMask(null, midX - index + 50, midY, 'mask_' + index);
+    for (let index = END_FACE_FRAME; index > START_FACE_FRAME; index--) {
+      const mask = this.add.bitmapMask(null, midX - index + 35, midY, 'mask_' + index);
       masks.push(mask);
-      faces.push(this.add.image(midX - index, midY, 'face_' + index).setMask(mask));
+      faces.push(this.add.image(midX - index + 35, midY, 'face_' + index).setMask(mask));
       //obj.setInteractive();
     }
-    circle = this.add.image(midX, midY, 'circle');
+    circle = this.add.image(midX + 35, midY, 'circle');
+
+    //    circle.visible = false;
     //   this.input.on('pointerdown', this.startDrag, this);
     //   this.input.on('pointerup', this.stopDrag, this);
   }
@@ -49,28 +55,39 @@ class Example extends Phaser.Scene {
 
   update() {
     if (!circleMoving) {
-      newX = (midX) + Phaser.Math.Between(-20, 20);
-      newY = (midY) + Phaser.Math.Between(-20, 20);
+      newX = (midX) + Phaser.Math.Between(-CIRCLE_MIN_MAX, CIRCLE_MIN_MAX);
+      newY = (midY) + Phaser.Math.Between(-CIRCLE_MIN_MAX, CIRCLE_MIN_MAX);
       circleMoving = true;
     }
 
-
-    if (circle.x > newX) circle.x -= .25;
-    if (circle.y > newY) circle.y -= .25;
-    if (circle.x < newX) circle.x += .25;
-    if (circle.y < newY) circle.y += .25;
-    if (circle.x == newX && circle.y == newY)
-      circleMoving = false;
-
+    const circle_speed = .25
+    var offset = 0;
     for (var i = 0; i < masks.length; i++) {
-      masks[i].x = faces[i].x = circle.x;
-      masks[i].y = faces[i].y = circle.y;
+      if (circle.x > newX) {
+        circle.x -= circle_speed;
+        masks[i].x -= circle_speed * offset;
+        faces[i].x -= circle_speed * offset;
+      }
+      if (circle.y > newY) {
+        circle.y -= circle_speed;
+        masks[i].y -= circle_speed * offset;
+        faces[i].y -= circle_speed * offset;
+      }
+      if (circle.x < newX) {
+        circle.x += circle_speed;
+        masks[i].x += circle_speed * offset;
+        faces[i].x += circle_speed * offset;
+      }
+      if (circle.y < newY) {
+        circle.y += circle_speed;
+        masks[i].y += circle_speed * offset;
+        faces[i].y += circle_speed * offset;
+      }
+      if (circle.x == newX && circle.y == newY)
+        circleMoving = false;
+      offset += .3;
     }
 
-    masks.forEach(mask => {
-      mask.x = circle.x;
-      mask.y = circle.y;
-    });
   }
 }
 
